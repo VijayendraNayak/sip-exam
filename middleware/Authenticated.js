@@ -1,15 +1,14 @@
 const jwt = require("jsonwebtoken")
-const User = require("../models/usermodel")
+const User = require("../models/usermodels")
 const { errorHandler } = require("../Utils/errorHandler")
-const { asyncErrHandler } = require("./")
 
-exports.isAuthenticated = asyncErrHandler(async (req, res, next) => {
+exports.isAuthenticated =async (req, res, next) => {
     const { access_token } = req.cookies
     if (!access_token) { return next(errorHandler(400, "Login to view this page")) }
     const isVerified = jwt.verify(access_token, process.env.JWT_SECRET)
     req.user = await User.findById(isVerified.id)
     next()
-})
+}
 
 exports.authorizeRoles = (...roles) => {
     return (req, res, next) => {
